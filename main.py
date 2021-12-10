@@ -29,7 +29,7 @@ async def balance(mackngo): #เช็กยอดคงเหลือ
     wallet_amt = users[str(user.id)]["wallet"]
     bank_amt = users[str(user.id)]["bank"] 
 
-    em = discord.Embed(title = f"{mackngo.author.name}'s balance", color = discord.Color.dark_gold())
+    em = discord.Embed(title = f"{mackngo.author.name}'s balance", color = 0xff8b94)
     em.add_field(name="Wallet balance", value=wallet_amt)
     em.add_field(name="Bank balance", value=bank_amt)
     await mackngo.send(embed = em)
@@ -40,17 +40,20 @@ async def send(ctx, member:discord.Member, amount = None): #โอนเงิ�
     await open_account(member)
 
     if amount == None:
-        await ctx.send("Please enter the amount.")
+        embed = discord.Embed(title="Please enter the amount.",color=0xffc0cb)
+        await ctx.send(embed=embed)
         return
     
     bal = await update_bank(ctx.author)
 
     amount = int(amount)
     if amount > bal[1]:
-        await ctx.send("You don't have enough money;)")
+        embed = discord.Embed(title="You don't have enough money;)",color=0xb0e0e6)
+        await ctx.send(embed=embed)
         return
     if amount < 0:
-        await ctx.send("Amount must more than zero.")
+        embed = discord.Embed(title="Amount must more than zero.",color=0xfff68f)
+        await ctx.send(embed=embed)
         return
 
     await update_bank(ctx.author, -amount, "bank")
@@ -63,46 +66,54 @@ async def withdraw(mackngo, amount = None): #ถอนเงิน
     await open_account(mackngo.author)
 
     if amount == None:
-        await mackngo.send("Please enter the amount.")
+        embed = discord.Embed(title="Please enter the amount.",color=0xffc0cb)
+        await mackngo.send(embed=embed)
         return
     
     bal = await update_bank(mackngo.author)
 
     amount = int(amount)
     if amount > bal[1]:
-        await mackngo.send("You don't have enough money;)")
+        embed = discord.Embed(title="You don't have enough money;)",color=0xb0e0e6)
+        await mackngo.send(embed=embed)
         return
     if amount < 0:
-        await mackngo.send("Amount must more than zero.")
+        embed = discord.Embed(title="Amount must more than zero.",color=0xfff68f)
+        await mackngo.send(embed=embed)
         return
 
     await update_bank(mackngo.author, amount)
     await update_bank(mackngo.author, -amount, "bank")
 
-    await mackngo.send(f"You withdrew {amount} coins!")
+    embed = discord.Embed(title=f"You withdrew {amount} coins!",color=0xff80ed)
+    await mackngo.send(embed=embed)
 
 @client.command()
 async def deposit(mackngo, amount = None): #ฝากเงิน
     await open_account(mackngo.author)
 
     if amount == None:
-        await mackngo.send("Please enter the amount.")
+        embed = discord.Embed(title="Please enter the amount.",color=0xffc0cb)
+        await mackngo.send(embed=embed)
         return
     
     bal = await update_bank(mackngo.author)
 
     amount = int(amount)
     if amount > bal[0]:
-        await mackngo.send("You don't have enough money;)")
+        embed = discord.Embed(title="You don't have enough money;)",color=0xb0e0e6)
+        await mackngo.send(embed=embed)
         return
     if amount < 0:
-        await mackngo.send("Amount must more than zero.")
+        embed = discord.Embed(title="Amount must more than zero.",color=0xfff68f)
+        await mackngo.send(embed=embed)
         return
 
     await update_bank(mackngo.author, -amount)
     await update_bank(mackngo.author, amount, "bank")
 
-    await mackngo.send(f"You deposited {amount} coins!")
+    embed = discord.Embed(title=f"You deposited {amount} coins!",color=0xff80ed)
+    await mackngo.send(embed=embed)
 
 @client.command()
 async def bet(mackngo): #เสี่ยงดวง
@@ -114,12 +125,15 @@ async def bet(mackngo): #เสี่ยงดวง
     losemoney = random.randrange(1, 1001)
     if  earnings <= 6:
         losemoney = -losemoney
-        await mackngo.send(f"Oops! You lose {abs(losemoney)} coins!")
+        embed = discord.Embed(title="Oops! You lose %d coins!" %losemoney,color=0xff4040)
+        await mackngo.send(embed=embed)
     elif earnings > 6 and earnings < 10:
-        await mackngo.send(f"You recieve {losemoney} coins!")
+        embed = discord.Embed(title="You recieve %d coins!" %losemoney,color=0x00ff7f)
+        await mackngo.send(embed=embed)
     else:
         losemoney = 0
-        await mackngo.send(f"Go Find a job!!")
+        embed = discord.Embed(title="Go Find a job!!",color=0x3399ff)
+        await mackngo.send(embed=embed)
 
     users[str(user.id)]["wallet"] += losemoney
     
@@ -127,15 +141,17 @@ async def bet(mackngo): #เสี่ยงดวง
         json.dump(users, f)
 
 @client.command()
-async def rps(mackngo):
+async def rps(mackngo):  #เป่ายิ้งฉุบ
     await open_account(mackngo.author)
     users = await databank()
     user = mackngo.author
-    await mackngo.send("ต้องการลงเดิมพันเท่าไหร่")
+    embed = discord.Embed(title="ต้องการลงเดิมพันเท่าไหร่",color=0x40e0d0)
+    await mackngo.send(embed=embed)
     bet = await client.wait_for("message")
     lostmoney = int(bet.content) *2
     if int(bet.content) > users[str(user.id)]["wallet"]:
-        await mackngo.send("ยอดเงินคุณไม่เพียงพอที่จะลงเดิมพัน")
+        embed = discord.Embed(title="ยอดเงินคุณไม่เพียงพอที่จะลงเดิมพัน",color=0xff0000)
+        await mackngo.send(embed=embed)
     else:
         while True:
             message = await mackngo.send("เป่า ยิ้ง ฉุบบ")
@@ -213,14 +229,16 @@ async def rps(mackngo):
     await mackngo.send(embed = gak)
 
 @client.command()
-async def guess(mackngo): #เสี่ยงดวง
+async def guess(mackngo): #เกมทายเลข
     await open_account(mackngo.author)
     users = await databank()
     user = mackngo.author
-    await mackngo.send("ต้องการลงเดิมพันเท่าไหร่")
+    embed = discord.Embed(title="ต้องการลงเดิมพันเท่าไหร่",color=0xc04df9)
+    await mackngo.send(embed=embed)
     bet = await client.wait_for("message")
     if int(bet.content) > users[str(user.id)]["wallet"]:
-        await mackngo.send("ยอดเงินคุณไม่เพียงพอที่จะลงเดิมพัน")
+        embed = discord.Embed(title="ยอดเงินคุณไม่เพียงพอที่จะลงเดิมพัน",color=0xff3f3f)
+        await mackngo.send(embed=embed)
     else:
         tbet = int(bet.content)
         users[str(user.id)]["wallet"] -= tbet
@@ -232,15 +250,20 @@ async def guess(mackngo): #เสี่ยงดวง
             respone = await client.wait_for("message")
             num = int(respone.content)
             if num > number:
-                await mackngo.send('มากไป')
+                embed = discord.Embed(title="มากไป",color=0xd11141)
+                await mackngo.send(embed=embed)
                 if 5 - (i+1) == 0:
-                    await mackngo.send("เสียใจด้วยและคำตอบที่ถูกต้องก็คืออออ %d!!!" %number)
+                    embed = discord.Embed(title="เสียใจด้วยและคำตอบที่ถูกต้องก็คืออออ %d!!!" %number,color=0xffc425)
+                    await mackngo.send(embed=embed)
             elif num < number:
-                await mackngo.send('น้อยไป')
+                embed = discord.Embed("น้อยไป",color=0xf37735)
+                await mackngo.send(embed=embed)
                 if 5 - (i+1) == 0:
-                    await mackngo.send("เสียใจด้วยและคำตอบที่ถูกต้องก็คืออออ %d!!!" %number)
+                    embed = discord.Embed(title="เสียใจด้วยและคำตอบที่ถูกต้องก็คืออออ %d!!!" %number,color=0xffc425)
+                    await mackngo.send(embed=embed)
             else:
-                await mackngo.send('ยินดีด้วย!!คุณได้รับเงินเป็นจำนวน %d Coin!!' %(tbet*2))
+                embed = discord.Embed(title='ยินดีด้วย!!คุณได้รับเงินเป็นจำนวน %d Coin!!' %(tbet*2),color=0x00aedb)
+                await mackngo.send(embed=embed)
                 users[str(user.id)]["wallet"] += tbet * 2
                 break
         with open("bank.json", "w") as f:
@@ -264,12 +287,6 @@ async def open_account(user): #เปิดบัญชี
         json.dump(users, f)
     return True
 
-async def databank():
-    with open("bank.json", "r") as f:
-        users = json.load(f)
-
-    return users
-
 @client.command()
 async def test(ctx):
     embed = discord.Embed(color=0x00ff00) #creates embed
@@ -277,7 +294,11 @@ async def test(ctx):
     await ctx.send(embed=embed)
 
 @client.command()
-async def quiz(ctx):
+async def quiz(ctx): #เกมตอบคำถาม
+    await open_account(ctx.author)
+    users = await databank()
+    user = ctx.author
+    
     with open("allquestion.json", "r") as f:
         ask = json.load(f)
     question = random.choice(list(ask.keys()))
@@ -293,14 +314,15 @@ async def quiz(ctx):
     if ansuser.content == '2':
         answer = ask[question][1]
     if ans == answer:
-        em = discord.Embed(title = 'ถูกต้องนะคร้าบบบบบ', color = discord.Color.green())
+        em = discord.Embed(title = 'ถูกต้องนะคร้าบบบบบ รับไปเลย 10 coins', color = discord.Color.random())
         await ctx.send(embed = em)
+        users[str(user.id)]["wallet"] += 10
     else:
         em = discord.Embed(title = 'ทำไมโง่อ่า ตอบ %s ตะหาก' %(ans), color = discord.Color.red())
         await ctx.send(embed = em)
 
 @client.command()
-async def addquiz(ctx):
+async def addquiz(ctx): #เพิ่มโจทย์
     await ctx.send("ระบุคำถาม")
     quiz = await client.wait_for("message")
     await ctx.send("ระบุตัวเลือกที่ 1")
@@ -314,10 +336,31 @@ async def addquiz(ctx):
     allquiz.update({quiz.content: [ch1.content, ch2.content, ans.content]})
     json.dump(allquiz, open("allquestion.json", "w"))
 
+@client.command()
+async def slot(ctx): #สลอต
+    await open_account(ctx.author)
+    users = await databank()
+    user = ctx.author
 
+    emoji = ['🍎', '🍐', '🍊', '🍋', '🍉', '🍇', '🍓', '🥑', '🍑', '🌽', '🍆', '🥕', '🍍', '🌸', '🌻']
+    i, j, k = random.choice(emoji), random.choice(emoji), random.choice(emoji)
+    if i == j == k:
+        result = 'Congrats! You received 250 coins.'
+        users[str(user.id)]["wallet"] += 250
+    elif i != j and j != k and i != k:
+        result = 'Sorry, you lost 50 coins. How pathetic ;P'
+        users[str(user.id)]["wallet"] -= 50
+    else:
+        result = 'Unfortunately, you neither recived nor lost. Pls try again'
+    em = discord.Embed(title = 'Slot 🎰', color = discord.Color.random())
+    em.add_field(name='Reels', value= '**> > %s %s %s <**\nResult: *%s*' %(i, j, k, result))
+    await ctx.send(embed = em)
+    
+    with open("bank.json", "w") as f:
+        json.dump(users, f)
     
 @client.command()
-async def rank(ctx):
+async def rank(ctx): #แสดงบัญชีที่มียอดเงินสูงสุดสามคนแรก
     users = await databank()
     mylist = []
     with open("bank.json", "r") as f:
@@ -337,7 +380,14 @@ async def rank(ctx):
     gak.add_field(name="user", value = "%s\n%s\n%s" %(str(usersort)[:-5],str(usersort2)[:-5],str(usersort3)[:-5]))
     gak.add_field(name="Coins", value= "%s\n%s\n%s" %(mylist[0][0],mylist[1][0],mylist[2][0]))
     await ctx.send(embed = gak)
-async def update_bank(user, change=0, mode="wallet"):
+
+async def databank(): #ดึงข้อมูลจาก bank.json
+    with open("bank.json", "r") as f:
+        users = json.load(f)
+
+    return users
+    
+async def update_bank(user, change=0, mode="wallet"): #อัพเดตยอดเงินใน bank.json
     users = await databank()
 
     users[str(user.id)][mode] += change
