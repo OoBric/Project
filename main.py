@@ -172,8 +172,8 @@ async def rps(mackngo):  #เป่ายิ้งฉุบ
                     await mackngo.send("เสมอจ้าเอาใหม่อีกครั้งนะ")
                 elif ans[number] == "Paper":
                     await mackngo.send("ฉันจะออก", file=discord.File("paper.png"))
-                    await mackngo.send("ยินดีด้วยคุณได้รับเงิน %d Coins" %lostmoney)
-                    users[str(user.id)]["wallet"] += lostmoney
+                    await mackngo.send("ยินดีด้วยคุณเสียเงิน %d Coins" %lostmoney)
+                    users[str(user.id)]["wallet"] -= lostmoney
                     break
                 elif ans[number] == "My Love":
                     await mackngo.send("เสียใจด้วยนะแต่ความรักของฉันจะชนะทุกอย่าง", file=discord.File("Mylove.png"))
@@ -181,8 +181,8 @@ async def rps(mackngo):  #เป่ายิ้งฉุบ
                     break
                 else:
                     await mackngo.send("ฉันจะออก", file=discord.File("scissors.png"))
-                    await mackngo.send("ยินดีด้วยคุณเสียเงิน %d Coins" %lostmoney)
-                    users[str(user.id)]["wallet"] -= lostmoney / 2
+                    await mackngo.send("ยินดีด้วยคุณได้เงิน %d Coins" %lostmoney)
+                    users[str(user.id)]["wallet"] += lostmoney / 2
                     break
             elif str(reaction.emoji) == "✂️":
                 await mackngo.send("ฉันจะออกอะไรดีน้าาาา")
@@ -207,8 +207,8 @@ async def rps(mackngo):  #เป่ายิ้งฉุบ
                 await mackngo.send("ฉันจะออกอะไรดีน้าาาา")
                 if ans[number] == "Rock":
                     await mackngo.send("ฉันจะออก", file=discord.File("Rock.png"))
-                    await mackngo.send("ยินดีด้วยคุณได้เสียเงิน %d Coins" %lostmoney)
-                    users[str(user.id)]["wallet"] -= lostmoney / 2
+                    await mackngo.send("ยินดีด้วยคุณได้รับเงิน %d Coins" %lostmoney)
+                    users[str(user.id)]["wallet"] += lostmoney / 2
                     break
                 elif ans[number] == "Paper":
                     await mackngo.send("ฉันจะออก", file=discord.File("paper.png"))
@@ -219,8 +219,8 @@ async def rps(mackngo):  #เป่ายิ้งฉุบ
                     break
                 else:
                     await mackngo.send("ฉันจะออก", file=discord.File("scissors.png"))
-                    await mackngo.send("ยินดีด้วยคุณได้รับเงิน %d Coins" %lostmoney)
-                    users[str(user.id)]["wallet"] += lostmoney
+                    await mackngo.send("ยินดีด้วยคุณเสียเงิน %d Coins" %lostmoney)
+                    users[str(user.id)]["wallet"] -= lostmoney
                     break
     with open("bank.json", "w") as f:
         json.dump(users, f)
@@ -337,6 +337,121 @@ async def addquiz(ctx): #เพิ่มโจทย์
     json.dump(allquiz, open("allquestion.json", "w"))
 
 @client.command()
+async def bj(ctx): #สลอต
+    await open_account(ctx.author)
+    users = await databank()
+    user = ctx.author
+    bed = discord.Embed(title="ต้องการลงเดิมพันเท่าไหร่",color=0xc04df9)
+    await ctx.send(embed=bed)
+    usercoin = await client.wait_for("message")
+    if int(usercoin.content) > users[str(user.id)]["wallet"]:
+        embest = discord.Embed(title="ยอดเงินคุณไม่เพียงพอที่จะลงเดิมพัน",color=0xff3f3f)
+        await ctx.send(embed=embest)
+    else:
+        tbet = int(usercoin.content)
+        emoji = ["A ♣", "2 ♣", "3 ♣", "4 ♣", "5 ♣", "6 ♣", "7 ♣", "8 ♣", "9 ♣", "10 ♣", "J ♣", "Q ♣", "K ♣", \
+        "A ♠", "2 ♠", "3 ♠", "4 ♠", "5 ♠", "6 ♠", "7 ♠", "8 ♠", "9 ♠", "10 ♠", "J ♠", "Q ♠", "K ♠", \
+            "A ♥", "2 ♥", "3 ♥", "4 ♥", "5 ♥", "6 ♥", "7 ♥", "8 ♥", "9 ♥", "10 ♥", "J ♥", "Q ♥", "K ♥", \
+                "A ♦", "2 ♦", "3 ♦", "4 ♦", "5 ♦", "6 ♦", "7 ♦", "8 ♦", "9 ♦", "10 ♦", "J ♦", "Q ♦", "K ♦"]
+        scoreplayer = 0
+        scorebanker = 0
+        checka = 0
+        checkb = 0
+        player = ""
+        banker = ""
+        for _ in range(2):
+            players = random.choice(emoji)
+            emoji.remove(players)
+            if players[0] == "A":
+                scoreplayer += 1
+                checka += 1
+            elif players[0] == "J" or players[0] == "Q" or players[0] == "K" or players[0] == "1":
+                scoreplayer += 10
+            else:
+                scoreplayer += int(players[0])
+            player += players + " "
+        while scorebanker <= 12:
+            bankers = random.choice(emoji)
+            emoji.remove(bankers)
+            if bankers[0] == "A":
+                scorebanker += 1
+                checkb += 1
+            elif bankers[0] == "J" or bankers[0] == "Q" or bankers[0] == "K" or bankers[0] == "1":
+                scorebanker += 10
+            else:
+                scorebanker += int(bankers[0])
+            banker += bankers + " "
+        if scorebanker <= 11 and checkb > 0:
+            scorebanker += 10
+        while True:
+            if scorebanker == 21:
+                break
+            elif scoreplayer >= 21:
+                break
+            embed = discord.Embed(title = "Blackjack Game", color = discord.Color.random())
+            embed.add_field(name= "Rules", value= "ถ้าไพ่ของคุณใกล้เคียง 21 หรือมากกว่าฝ่ายของ Banker จะทำให้คุณ'ชนะ'แต่ถ้าไพ่คุณเกิน 21 ถือว่าคุณแพ้ทันที", inline=False)
+            embed.add_field(name= "Player Cards", value= "%s\n Score %s" %(player, str(scoreplayer)), inline=True)
+            embed.add_field(name= "Banker Cards", value= "❓ ❓\n Score ลุ้นหน่อยอร่อยแน่", inline=True)
+            embed.set_footer(text="และ ถ้าเกิดคุณมีไพ่ A ละแต้มรวมของคุณน้อยกว่า 11 ไพ่ของคุณจะบวกทันที 10 แต้ม หรือถ้าคุณเสมอกะbankerก็จะถือว่าคุณแพ้")
+            await ctx.send(embed = embed)
+            em = discord.Embed(title = "Exclusive Rules!", color = discord.Color.random())
+            em.add_field(name= "ถ้าคุณพิมคำว่า 'hit' ", value= "แปลว่าคุณต้องการไพ่เพิ่มแต่ถ้าไพ่คุณมากกว่า 21 จะถือว่าคุณแพ้ทันที!!")
+            em.add_field(name= "แต่ถ้าคุณพิมพ์คำว่า 'stand'", value= "แปลว่าคุณไม่ต้องการไพ่เพิ่มและเริ่มนับคะแนนทันที")
+            await ctx.send(embed = em)
+            playersend = await client.wait_for("message")
+            if playersend.content == "hit":
+                players = random.choice(emoji)
+                emoji.remove(players)
+                if players[0] == "A":
+                    scoreplayer += 1
+                    checka += 1
+                elif players[0] == "J" or players[0] == "Q" or players[0] == "K" or players[0] == "1":
+                    scoreplayer += 10
+                else:
+                    scoreplayer += int(players[0])
+                player += players + " "
+            elif playersend.content == "stand":
+                break
+            else:
+                await ctx.send("ส่งไรมาอะเห้ยยยไม่รู้เรื่องไปส่งมาใหม่")
+    if scoreplayer <= 11 and checka > 0:
+        scoreplayer += 10
+    embed = discord.Embed(title = "Blackjack Game", color = discord.Color.random())
+    embed.add_field(name= "Rules", value= "ถ้าไพ่ของคุณใกล้เคียง 21 หรือมากกว่าฝ่ายของ Banker จะทำให้คุณ'ชนะ'แต่ถ้าไพ่คุณเกิน 21 ถือว่าคุณแพ้ทันที", inline=False)
+    embed.add_field(name= "Player Cards", value= "%s\n Score %s" %(player, str(scoreplayer)), inline=True)
+    embed.add_field(name= "Banker Cards", value= "%s\n Score %s" %(banker, str(scorebanker)), inline=True)
+    embed.set_footer(text="และ ถ้าเกิดคุณมีไพ่ A ละแต้มรวมของคุณน้อยกว่า 11 ไพ่ของคุณจะบวกทันที 10 แต้ม หรือถ้าคุณเสมอกะbankerก็จะถือว่าคุณแพ้")
+    await ctx.send(embed = embed)
+    lastmoney = tbet * 2
+    if scoreplayer > 21:
+        embed = discord.Embed(title = "เสียใจด้วยคุณแพ้ลองใหม่นะจ๊ะ", color = discord.Color.random())
+        await ctx.send(embed = embed)
+        users[str(user.id)]["wallet"] -= tbet
+        with open("bank.json", "w") as f:
+            json.dump(users, f)
+    elif scoreplayer > 21 and scorebanker > 21:
+        embed = discord.Embed(title = "เสียใจด้วยคุณแพ้ลองใหม่นะจ๊ะ", color = discord.Color.random())
+        await ctx.send(embed = embed)
+        users[str(user.id)]["wallet"] -= tbet
+        with open("bank.json", "w") as f:
+            json.dump(users, f)
+    elif scoreplayer <= scorebanker:
+        embed = discord.Embed(title = "เสียใจด้วยคุณแพ้ลองใหม่นะจ๊ะ", color = discord.Color.random())
+        await ctx.send(embed = embed)
+        users[str(user.id)]["wallet"] -= tbet
+        with open("bank.json", "w") as f:
+            json.dump(users, f)
+    elif scorebanker > 21 or scorebanker <= scoreplayer:
+        embed = discord.Embed(title = "ดีใจด้วยคุณชนะ!!คุณได้เงินจำนวน %d เอากำไรมาเล่นอีกรอบสิ อิอิ" %lastmoney, color = discord.Color.random())
+        await ctx.send(embed = embed)
+        users[str(user.id)]["wallet"] += tbet * 2
+        users[str(user.id)]["wallet"] -= tbet
+        with open("bank.json", "w") as f:
+            json.dump(users, f)
+    gak = discord.Embed(title = f"ตอนนี้คุณ {ctx.author.name}'s", color = discord.Color.dark_gold())
+    gak.add_field(name= "มีเงินทั้งหมด", value= users[str(user.id)]["wallet"])
+    await ctx.send(embed = gak)
+@client.command()
 async def slot(ctx): #สลอต
     await open_account(ctx.author)
     users = await databank()
@@ -358,7 +473,6 @@ async def slot(ctx): #สลอต
     
     with open("bank.json", "w") as f:
         json.dump(users, f)
-    
 @client.command()
 async def rank(ctx): #แสดงบัญชีที่มียอดเงินสูงสุดสามคนแรก
     users = await databank()
@@ -398,4 +512,4 @@ async def update_bank(user, change=0, mode="wallet"): #อัพเดตยอ�
     bal = [users[str(user.id)]["wallet"], users[str(user.id)]["bank"]]
     return bal
 
-client.run('OTE2NzA4NDk4ODg3MzAzMjA5.YauFUQ.0CwFfCUDZTDklVDW2jhyqvY3ZHM')
+client.run('OTE2NzA4NDk4ODg3MzAzMjA5.YauFUQ.pU1qVfKIkfYCSBgDqveNcAOslaY')
